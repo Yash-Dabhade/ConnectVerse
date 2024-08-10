@@ -3,6 +3,11 @@ import cors from "cors";
 import session from "express-session";
 import morgan from "morgan";
 import UserRouter from "./routes/user.routes.js";
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: "./.env",
+});
 
 const app = express();
 

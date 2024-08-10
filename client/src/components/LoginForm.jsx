@@ -3,34 +3,25 @@ import api from "../api/api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
 import { NavLink } from "react-router-dom";
 
-function SignUpForm() {
-  const [fullName, setFullName] = useState("");
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     console.log(process.env.REACT_APP_BACKEND_BASE_URL);
 
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!email || !password) {
       alert("All fields are compulsary");
-      return;
-    }
-
-    if (password != confirmPassword) {
-      alert("Passwords don't match");
       return;
     }
 
     console.log(process.env.REACT_APP_BACKEND_BASE_URL);
 
     api
-      .post("/signup", {
-        fullName: fullName,
+      .post("/login", {
         email,
         password,
       })
@@ -65,50 +56,14 @@ function SignUpForm() {
             }}
           ></div>
 
-          <form className="w-full" onSubmit={handleRegister}>
+          <form className="w-full" onSubmit={handleLogin}>
             <div className="mb-8">
               <h3 className="text-blue-950 text-2xl font-bold">
-                Join ConnectVerse
+                Welcome back to ConnectVerse
               </h3>
             </div>
 
             <div className="space-y-6">
-              <div>
-                <label className="text-gray-800 text-sm mb-2 block">
-                  Full Name
-                </label>
-                <div className="relative flex items-center">
-                  <input
-                    name="name"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => {
-                      setFullName(e.target.value);
-                    }}
-                    required
-                    className="bg-white border border-gray-300 w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500"
-                    placeholder="Enter name"
-                  />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="#bbb"
-                    stroke="#bbb"
-                    className="w-4 h-4 absolute right-4"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      cx="10"
-                      cy="7"
-                      r="6"
-                      data-original="#000000"
-                    ></circle>
-                    <path
-                      d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5zm8-4h-2.59l.3-.29a1 1 0 0 0-1.42-1.42l-2 2a1 1 0 0 0 0 1.42l2 2a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-.3-.29H22a1 1 0 0 0 0-2z"
-                      data-original="#000000"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
               <div>
                 <label className="text-gray-800 text-sm mb-2 block">
                   Email Id
@@ -192,39 +147,7 @@ function SignUpForm() {
                   </svg>
                 </div>
               </div>
-              <div>
-                <label className="text-gray-800 text-sm mb-2 block">
-                  Confirm Password
-                </label>
-                <div className="relative flex items-center">
-                  <input
-                    name="confirmpassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                    }}
-                    required
-                    className="bg-white border border-gray-300 w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500"
-                    placeholder="Enter password"
-                  />
-                  <svg
-                    onClick={(e) => {
-                      setShowConfirmPassword(!showConfirmPassword);
-                    }}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="#bbb"
-                    stroke="#bbb"
-                    className="w-4 h-4 absolute right-4 cursor-pointer"
-                    viewBox="0 0 128 128"
-                  >
-                    <path
-                      d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"
-                      data-original="#000000"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
+
               <div className="flex items-center">
                 <input
                   id="remember-me"
@@ -250,16 +173,16 @@ function SignUpForm() {
                 type="submit"
                 className="w-full py-2.5 px-4 text-sm tracking-wider font-semibold rounded-md bg-blue-700 hover:bg-blue-800 text-white focus:outline-none"
               >
-                Create Account
+                Login
               </button>
             </div>
             <p className="text-gray-800 text-sm mt-6 text-center">
-              Already have an account?{" "}
+              Don't have an account ?{" "}
               <NavLink
-                to="/login"
+                to="/signup"
                 className="text-indigo-600 font-semibold hover:underline ml-1"
               >
-                Login here
+                SignUp here
               </NavLink>
             </p>
           </form>
@@ -269,4 +192,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default LoginForm;
