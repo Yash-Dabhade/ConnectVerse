@@ -1,6 +1,5 @@
 import { User } from "../models/user.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 // Register Route
@@ -10,8 +9,14 @@ const registerUser = asyncHandler(async (req, res) => {
   const { email, fullName, password } = req.body;
 
   //validate data
-  if ([email, fullName, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(401, "All fields are required");
+  if (!fullName || !email || !password) {
+    res.status(500).json(new ApiResponse(500, {}, "All fields are required"));
+  }
+
+  if (password.length < 6) {
+    res
+      .status(500)
+      .json(new ApiResponse(500, {}, "Password of atleast 6 length required"));
   }
 
   // check if already user available with current email
@@ -19,7 +24,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // if already available, send response
   if (existedUser) {
-    throw new ApiError(409, "User with email already exist");
+    res
+      .status(409)
+      .json(new ApiResponse(409, {}, "User with email already exist"));
   }
 
   // create new user
@@ -35,10 +42,14 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 
   // get current user excluding password field
-  const createdUser = await User.findById(user._id).select("-password ");
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
   if (!createdUser) {
-    throw new ApiError(500, "Something went wrong in creating User");
+    res
+      .status(500)
+      .json(new ApiResponse(500, {}, "Something went wrong in creating User"));
   }
 
   // return createdUser, access and refresh token via json format
@@ -61,7 +72,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // check if email is empty
   if (!email || !password) {
-    throw new ApiError(400, "Email and Password are required");
+    res
+      .status(400)
+      .json(new ApiResponse(400, {}, "Email and Password are required"));
   }
 
   // find user by email
@@ -69,7 +82,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // if user not found, send message to register
   if (!user) {
-    throw new ApiError(400, "User not registered");
+    res.status(400).json(new ApiResponse(400, {}, "User Not Registered"));
   }
 
   // validate password which was hased using isPasswordCorrect method in model
@@ -77,7 +90,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // if password is not valid return error
   if (!isValidPassword) {
-    throw new ApiError(401, "Invalid Password !");
+    res.status(200).json(new ApiResponse(401, {}, "Invalid Password"));
   }
 
   // get access and refersh token
@@ -117,10 +130,15 @@ const generateAccessAndRefereshToken = async (userId) => {
     return { accessToken, refreshToken };
   } catch (error) {
     console.log(error);
-    throw new ApiError(
-      500,
-      "Something went wrong while generating referesh and access token"
-    );
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          500,
+          {},
+          "Something went wrong while generating referesh and access token"
+        )
+      );
   }
 };
 

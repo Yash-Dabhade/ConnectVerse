@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
+import morgan from "morgan";
 import UserRouter from "./routes/user.routes.js";
 
 const app = express();
@@ -19,6 +20,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(express.json());
+
+//morgan middleware
+app.use(morgan("tiny"));
 
 // setting up routes
 app.use("/api/v1", UserRouter);
