@@ -50,6 +50,7 @@ Developed JWT authentication system with following implementations
 
 Details :
 * Field validation and state management
+* View hidden password 
 * Remember me feature
 * Proper error details with toast
 * Enforced input validation and sanitization
