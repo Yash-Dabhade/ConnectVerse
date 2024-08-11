@@ -173,6 +173,46 @@ const generateAccessAndRefereshToken = async (userId) => {
   }
 };
 
+// to generate new access token
+const generateAccessTokenFromReferesh = async (req, res) => {
+  const { refresh } = req.body;
+  if (!refresh) {
+    return res
+      .status(200)
+      .json(new ApiResponse(500, {}, "Invalid or empty refresh token"));
+  }
+  try {
+    const user = await User.findOne({ refreshToken: refresh });
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          accessToken,
+          refreshToken,
+        },
+        "Success"
+      )
+    );
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          500,
+          {},
+          "Something went wrong while generating referesh and access token"
+        )
+      );
+  }
+};
+
 //forget password
 const forgotpassword = asyncHandler(async (req, res, next) => {
   //collect email
@@ -285,4 +325,10 @@ const passwordReset = asyncHandler(async (req, res, next) => {
   );
 });
 
-export { registerUser, loginUser, forgotpassword, passwordReset };
+export {
+  registerUser,
+  loginUser,
+  forgotpassword,
+  passwordReset,
+  generateAccessTokenFromReferesh,
+};
