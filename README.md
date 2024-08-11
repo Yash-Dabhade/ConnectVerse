@@ -44,7 +44,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<img src="client/public/assets/ss.png" alt="Logo" width="1280" height="480">
+<img src="client/public/assets/ss.png" alt="Logo" width="1200" height="400">
 
 Developed JWT authentication system with following implementations
 
