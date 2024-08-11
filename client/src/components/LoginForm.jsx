@@ -48,6 +48,7 @@ function LoginForm() {
             sessionStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
             sessionStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
           }
+
           //redirect to the home page
           window.location.href = "/";
         } else {
