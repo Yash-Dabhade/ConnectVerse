@@ -48,6 +48,16 @@ function SignUpForm() {
       })
       .then((res) => {
         if (res.data.statusCode == 200) {
+          toast.success("Successfully Registered !", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
           if (remember) {
             localStorage.setItem("email", res.data.data?.user?.email);
             localStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
