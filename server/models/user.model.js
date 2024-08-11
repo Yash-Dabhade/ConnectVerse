@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { nanoid } from "nanoid";
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -18,9 +21,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: [6, "Password must be atleast of 6 char"],
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     refreshToken: {
       type: String,
     },
+    verificationToken: String,
+    forgotPasswordToken: String,
+    forgotPasswordExpiry: Date,
   },
   { timestamps: true }
 );
@@ -43,7 +53,6 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
       fullname: this.fullname,
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -63,6 +72,33 @@ userSchema.methods.generateRefreshToken = function () {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
+};
+
+//generate and return verification password token
+userSchema.methods.getVerificationToken = function () {
+  //generate a long and random string
+
+  let generatedToken = crypto.randomBytes(20).toString("hex");
+
+  //getting a hash - make sure to get hash on backend
+  this.verificationToken = generatedToken;
+
+  return generatedToken;
+};
+
+//generate and return forget password token
+userSchema.methods.getForgotPasswordToken = function () {
+  //generate a long and random string
+  const generatedToken = crypto.randomBytes(20).toString("hex");
+
+  //getting a hash - make sure to get hash on backend
+  this.forgotPasswordToken = generatedToken;
+
+  //expiry time of the token
+  this.forgotPasswordExpiry =
+    Date.now() + process.env.FORGOT_PASSWORD_EXPIRY * 24 * 60 * 60 * 1000;
+
+  return generatedToken;
 };
 
 export const User = mongoose.model("User", userSchema);
