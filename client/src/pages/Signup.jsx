@@ -4,7 +4,7 @@ import SignUpForm from "../components/SignUpForm";
 
 function Signup() {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center gap-6">
+    <div className="w-full h-full flex flex-col items-center gap-12">
       <Header />
       <SignUpForm />
     </div>

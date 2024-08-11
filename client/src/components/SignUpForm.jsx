@@ -70,8 +70,8 @@ function SignUpForm() {
   };
 
   return (
-    <div className="w-[500px] font-semibold bg-gray-50 flex items-center md:h-screen p-4">
-      <div className="w-full max-w-4xl max-md:max-w-xl mx-auto">
+    <div className="lg:w-[500px] w-full  font-semibold bg-gray-50 flex justify-center items-center md:h-screen p-4">
+      <div className="w-full max-w-5xl max-md:max-w-xl mx-auto">
         <div className="bg-white flex items-center justify-center h-1/2 sm:p-8 p-6 shadow-md rounded-md overflow-hidden">
           <form className="w-full" onSubmit={handleRegister}>
             <div className="mb-8">

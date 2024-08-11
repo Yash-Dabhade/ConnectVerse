@@ -60,18 +60,9 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-[500px] font-semibold bg-gray-50 flex items-center md:h-screen p-4">
+    <div className="lg:w-[500px] sm:w-1/2  font-semibold bg-gray-50 flex items-center md:h-screen p-4">
       <div className="w-full max-w-4xl max-md:max-w-xl mx-auto">
         <div className="bg-white flex items-center justify-center h-1/2 sm:p-8 p-6 shadow-md rounded-md overflow-hidden">
-          <div
-            className="rounded-xl max-md:order-1 space-y-6"
-            style={{
-              backgroundImage: "url('./assets/globe.jpg')",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-            }}
-          ></div>
-
           <form className="w-full" onSubmit={handleLogin}>
             <div className="mb-8">
               <h3 className="text-blue-950 text-2xl font-bold">
@@ -203,7 +194,7 @@ function LoginForm() {
             </p>
             <p className="text-gray-800 text-sm mt-6 text-center">
               <NavLink
-                to="/"
+                to="/login"
                 className="text-blue-700 font-semibold hover:underline ml-1"
               >
                 Forget Password
