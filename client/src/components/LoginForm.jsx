@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import api from "../api/api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -9,16 +11,26 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
+  const handleToastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log(process.env.REACT_APP_BACKEND_BASE_URL);
 
     if (!email || !password) {
-      alert("All fields are compulsary");
+      handleToastError("All fields are compulsary");
       return;
     }
-
-    console.log(process.env.REACT_APP_BACKEND_BASE_URL);
 
     api
       .post("/login", {
@@ -26,27 +38,31 @@ function LoginForm() {
         password,
       })
       .then((res) => {
-        console.log(res);
-        if (remember) {
-          localStorage.setItem("email", res.data?.user?.email);
-          localStorage.setItem(ACCESS_TOKEN, res.data.accessToken);
-          localStorage.setItem(REFRESH_TOKEN, res.data.refreshToken);
+        if (res.data.statusCode == 200) {
+          if (remember) {
+            localStorage.setItem("email", res.data.data?.user?.email);
+            localStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
+            localStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
+          } else {
+            sessionStorage.setItem("email", res.data.data?.user?.email);
+            sessionStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
+            sessionStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
+          }
+          //redirect to the home page
+          window.location.href = "/";
         } else {
-          sessionStorage.setItem("email", res.data?.user?.email);
-          sessionStorage.setItem(ACCESS_TOKEN, res.data.accessToken);
-          sessionStorage.setItem(REFRESH_TOKEN, res.data.refreshToken);
+          handleToastError(res.data.message);
         }
       })
       .catch((err) => {
-        alert("Unable to register at this time ! Try again later");
-        console.log(err);
+        handleToastError("Unable to register at this time ! Try again later");
       });
   };
 
   return (
-    <div className="w-full font-semibold bg-gray-50 flex items-center md:h-screen p-4">
+    <div className="w-[500px] font-semibold bg-gray-50 flex items-center md:h-screen p-4">
       <div className="w-full max-w-4xl max-md:max-w-xl mx-auto">
-        <div className="bg-white grid md:grid-cols-2 gap-16 w-full sm:p-8 p-6 shadow-md rounded-md overflow-hidden">
+        <div className="bg-white flex items-center justify-center h-1/2 sm:p-8 p-6 shadow-md rounded-md overflow-hidden">
           <div
             className="rounded-xl max-md:order-1 space-y-6"
             style={{
@@ -185,9 +201,29 @@ function LoginForm() {
                 SignUp here
               </NavLink>
             </p>
+            <p className="text-gray-800 text-sm mt-6 text-center">
+              <NavLink
+                to="/"
+                className="text-blue-700 font-semibold hover:underline ml-1"
+              >
+                Forget Password
+              </NavLink>
+            </p>
           </form>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

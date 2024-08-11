@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import api from "../api/api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
 import { NavLink } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function SignUpForm() {
   const [fullName, setFullName] = useState("");
@@ -12,21 +14,31 @@ function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
+  const handleToastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   const handleRegister = (e) => {
     e.preventDefault();
-    console.log(process.env.REACT_APP_BACKEND_BASE_URL);
 
     if (!fullName || !email || !password || !confirmPassword) {
-      alert("All fields are compulsary");
+      handleToastError("All fields are compulsary");
       return;
     }
 
     if (password != confirmPassword) {
-      alert("Passwords don't match");
+      handleToastError("Passwords don't match");
       return;
     }
-
-    console.log(process.env.REACT_APP_BACKEND_BASE_URL);
 
     api
       .post("/signup", {
@@ -35,36 +47,32 @@ function SignUpForm() {
         password,
       })
       .then((res) => {
-        console.log(res);
-        if (remember) {
-          localStorage.setItem("email", res.data?.user?.email);
-          localStorage.setItem(ACCESS_TOKEN, res.data.accessToken);
-          localStorage.setItem(REFRESH_TOKEN, res.data.refreshToken);
+        if (res.data.statusCode == 200) {
+          if (remember) {
+            localStorage.setItem("email", res.data.data?.user?.email);
+            localStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
+            localStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
+          } else {
+            sessionStorage.setItem("email", res.data.data?.user?.email);
+            sessionStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
+            sessionStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
+          }
+          //redirect to the homepage
+          window.location.href = "/";
         } else {
-          sessionStorage.setItem("email", res.data?.user?.email);
-          sessionStorage.setItem(ACCESS_TOKEN, res.data.accessToken);
-          sessionStorage.setItem(REFRESH_TOKEN, res.data.refreshToken);
+          handleToastError(res.data.message);
         }
       })
       .catch((err) => {
-        alert("Unable to register at this time ! Try again later");
+        handleToastError("Unable to register at this time ! Try again later");
         console.log(err);
       });
   };
 
   return (
-    <div className="w-full font-semibold bg-gray-50 flex items-center md:h-screen p-4">
+    <div className="w-[500px] font-semibold bg-gray-50 flex items-center md:h-screen p-4">
       <div className="w-full max-w-4xl max-md:max-w-xl mx-auto">
-        <div className="bg-white grid md:grid-cols-2 gap-16 w-full sm:p-8 p-6 shadow-md rounded-md overflow-hidden">
-          <div
-            className="rounded-xl max-md:order-1 space-y-6"
-            style={{
-              backgroundImage: "url('./assets/globe.jpg')",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-            }}
-          ></div>
-
+        <div className="bg-white flex items-center justify-center h-1/2 sm:p-8 p-6 shadow-md rounded-md overflow-hidden">
           <form className="w-full" onSubmit={handleRegister}>
             <div className="mb-8">
               <h3 className="text-blue-950 text-2xl font-bold">
@@ -264,6 +272,18 @@ function SignUpForm() {
             </p>
           </form>
         </div>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );

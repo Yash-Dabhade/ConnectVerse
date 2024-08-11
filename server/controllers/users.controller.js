@@ -76,28 +76,21 @@ const registerUser = asyncHandler(async (req, res) => {
   //attempt to send email
   try {
     await sendMail(user.email, "ConnectVerse - Verify Email", message);
-
-    //send json response for success
-    res.status(200).json({
-      success: true,
-      message: "Email sent successfully",
-    });
+    // return createdUser, access and refresh token via json format
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { user: createdUser, accessToken, refreshToken },
+          "User created successfully!"
+        )
+      );
   } catch (error) {
     await user.save({ validateBeforeSave: false });
     //send error response
     return res.status(200).json(new ApiResponse(500, {}, "Error occured"));
   }
-
-  // return createdUser, access and refresh token via json format
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { user: createdUser, accessToken, refreshToken },
-        "User created successfully!"
-      )
-    );
 });
 
 // Login Route
@@ -119,7 +112,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // if user not found, send message to register
   if (!user) {
     return res
-      .status(400)
+      .status(200)
       .json(new ApiResponse(400, {}, "User Not Registered"));
   }
 
