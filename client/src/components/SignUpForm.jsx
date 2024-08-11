@@ -12,7 +12,7 @@ function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [acceptTC, setAcceptTC] = useState(false);
 
   const handleToastError = (message) => {
     toast.error(message, {
@@ -29,6 +29,11 @@ function SignUpForm() {
 
   const handleRegister = (e) => {
     e.preventDefault();
+
+    if (!acceptTC) {
+      handleToastError("Please accept Terms & Conditions to proceed");
+      return;
+    }
 
     if (!fullName || !email || !password || !confirmPassword) {
       handleToastError("All fields are compulsary");
@@ -48,7 +53,7 @@ function SignUpForm() {
       })
       .then((res) => {
         if (res.data.statusCode == 200) {
-          toast.success("Successfully Registered !", {
+          toast.success("Successfully Registered ! Verify from mail ", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -58,17 +63,10 @@ function SignUpForm() {
             progress: undefined,
             theme: "light",
           });
-          if (remember) {
-            localStorage.setItem("email", res.data.data?.user?.email);
-            localStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
-            localStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
-          } else {
-            sessionStorage.setItem("email", res.data.data?.user?.email);
-            sessionStorage.setItem(ACCESS_TOKEN, res.data.data.accessToken);
-            sessionStorage.setItem(REFRESH_TOKEN, res.data.data.refreshToken);
-          }
-          //redirect to the homepage
-          window.location.href = "/";
+          //redirect to login in 4 seconds
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 4000);
         } else {
           handleToastError(res.data.message);
         }
@@ -245,20 +243,23 @@ function SignUpForm() {
               </div>
               <div className="flex items-center">
                 <input
-                  id="remember-me"
-                  name="remember-me"
-                  value={remember}
+                  id="TC"
+                  name="AcceptT&C"
+                  value={acceptTC}
                   onChange={(e) => {
-                    setRemember(e.target.checked);
+                    setAcceptTC(e.target.checked);
                   }}
                   type="checkbox"
                   className="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md"
                 />
                 <label
-                  htmlFor="remember-me"
+                  htmlFor="AcceptT&C"
                   className="text-gray-700 ml-3 block text-sm "
                 >
-                  Remember me
+                  Accept{" "}
+                  <NavLink to="/signup" className="text-blue-500">
+                    Terms and condition
+                  </NavLink>
                 </label>
               </div>
             </div>
